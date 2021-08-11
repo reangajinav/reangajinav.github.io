@@ -23,7 +23,7 @@ class App extends BaseConfig
 	 *
 	 * @var string
 	 */
-	public $baseURL = 'https://reangajinav.github.io/simulasi/';
+	public $baseURL = 'https://reangajinav.github.io/public/';
 
 	/**
 	 * --------------------------------------------------------------------------
