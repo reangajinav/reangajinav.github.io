@@ -34,7 +34,7 @@
 	<div class="container">
 		<div class="row justify-content-center">
 			<div class="col-md-8 col-lg-8 col-sm-8">
-				<form action="/dashboard/simulasi" method="post" enctype="multipart/form-data">
+				<form action="index.php" method="post" enctype="multipart/form-data">
 					<div class="form-group">
 						<label for="bulan">JUMLAH BULAN</label>
 						<input type="number" class="form-control" id="bulan" name="bulan" placeholder="Masukan Jumlah Bulan">
@@ -59,11 +59,57 @@
 						<label for="simulasi_profit">KURS DOLLAR</label>
 						<input type="number" class="form-control" id="kurs_dollar" name="kurs_dollar" placeholder="Kurs Dollar">
 					</div>
-					<button type="submit" class="btn btn-primary">Submit</button>
+					<button type="submit" class="btn btn-primary" name="submit">Submit</button>
 				</form>
 			</div>
 		</div>
 	</div>
+
+	<?php
+		$data = [];
+
+		if(isset($_POST['submit'])) {
+			$bulan = $_POST['bulan'];
+			$deposit_awal = $_POST['deposit_awal'];
+			$simulasi_profit = $_POST['simulasi_profit'];
+			$simulasi_sharing_profit = $_POST['simulasi_sharing_profit'];
+			$adding_saldo = $_POST['adding_saldo'];
+			$kurs_dollar = $_POST['kurs_dollar'];
+
+			$profit['simulasi_profit'] = $simulasi_profit;
+			$profit['simulasi_sharing_profit'] = $simulasi_sharing_profit;
+
+			$depo = 0;
+			if ($adding_saldo == null) {
+				$adding_saldo = 0;
+			}
+
+			for ($i=0; $i < $bulan; $i++) { 
+
+				if ($depo == 0) {
+					$depo = $deposit_awal;	
+				}
+
+				$simulasi[$i]['deposit_awal'] = limit_decimal($depo);
+				$simulasi[$i]['simulasi_profit'] = limit_decimal($depo * $simulasi_profit/100);
+				$simulasi[$i]['simulasi_sharing_profit'] = limit_decimal(($depo * $simulasi_profit/100) - (($depo * $simulasi_profit/100)*$simulasi_sharing_profit/100));
+				$simulasi[$i]['adding_saldo'] = limit_decimal($adding_saldo);
+				$simulasi[$i]['kurs_dollar'] = limit_decimal($kurs_dollar);
+				$simulasi[$i]['saldo'] = limit_decimal($depo + $simulasi[$i]['simulasi_sharing_profit']);
+				$simulasi[$i]['saldo_in_rupiah'] = $simulasi[$i]['saldo'] * $kurs_dollar;
+
+				$depo = $simulasi[$i]['saldo'] + $adding_saldo;
+			}
+
+			$data = $simulasi;
+			$input = $profit;
+		}
+
+		function limit_decimal($number)
+		{
+			return number_format((float)$number, 2,'.','');
+		}
+	?>
 
 	<div class="modal fade" id="myModal">
 		<div class="modal-dialog">
